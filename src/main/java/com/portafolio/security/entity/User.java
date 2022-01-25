@@ -2,6 +2,9 @@ package com.portafolio.security.entity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+
+import com.portafolio.crud.personalInformation.PersonalInformation;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,7 +27,7 @@ public class User {
     @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"),
     inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
-
+    
     public User() {
     }
 
@@ -35,7 +38,7 @@ public class User {
         this.password = password;
     }
 
-    public int getId() {
+	public int getId() {
         return id;
     }
 

@@ -30,7 +30,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         try {
             String token = getToken(req);
             if(token != null && jwtProvider.validateToken(token)){
-                String username = jwtProvider.getNombreUsuarioFromToken(token);
+                String username = jwtProvider.getUserNameFromToken(token);
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
                 UsernamePasswordAuthenticationToken auth =
@@ -48,5 +48,20 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         if(header != null && header.startsWith("Bearer"))
             return header.replace("Bearer ", "");
         return null;
+    }
+    
+    public String getUserNameFromToken(HttpServletRequest req) {
+    	String username = "";
+    	 try {
+             String token = getToken(req);
+             if(token != null && jwtProvider.validateToken(token)){
+                 username = jwtProvider.getUserNameFromToken(token);
+               
+             }
+         } catch (Exception e){
+             logger.error("fail en el método doFilter " + e.getMessage());
+         }
+		return username;
+    	
     }
 }
