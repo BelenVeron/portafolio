@@ -61,7 +61,8 @@ public class MainSecurity extends WebSecurityConfigurerAdapter {
                 .antMatchers(
                 		"/auth/**",
                 		"/index",
-                		"/personalInformation/get/**"
+                		"/personalInformation/get/**",
+                		"/user/get/**"
                 ).permitAll()
                 .anyRequest().authenticated()
                 .and()
