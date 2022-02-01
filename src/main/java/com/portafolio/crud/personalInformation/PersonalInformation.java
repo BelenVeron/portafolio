@@ -1,11 +1,16 @@
 package com.portafolio.crud.personalInformation;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
+
+import com.portafolio.crud.cloudinary.Image;
 
 @Entity
 public class PersonalInformation {
@@ -15,26 +20,31 @@ public class PersonalInformation {
     private int id;
 	@NotNull
     private String name;
-    private String picture;
     private String degree;
     @Column(columnDefinition = "MEDIUMTEXT")
     private String summary;
     
     @Column(name="user_id")
     private int userId;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "image_id", referencedColumnName = "id")
+    private Image image;
 
 
 	public PersonalInformation() {
 	}
 
-	public PersonalInformation(@NotNull String name, String picture, String degree, String summary, int userId) {
+	
+
+	public PersonalInformation(@NotNull String name, String degree, String summary, int userId, Image image) {
 		this.name = name;
-		this.picture = picture;
 		this.degree = degree;
 		this.summary = summary;
 		this.userId = userId;
+		this.image = image;
 	}
-	
+
+
 
 	public int getUserId() {
 		return userId;
@@ -60,12 +70,12 @@ public class PersonalInformation {
 		this.name = name;
 	}
 
-	public String getPicture() {
-		return picture;
+	public Image getImage() {
+		return image;
 	}
 
-	public void setPicture(String picture) {
-		this.picture = picture;
+	public void setImage(Image image) {
+		this.image = image;
 	}
 
 	public String getDegree() {

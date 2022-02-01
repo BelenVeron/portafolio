@@ -1,9 +1,9 @@
 package com.portafolio.crud.personalInformation;
 
-import javax.persistence.Column;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import com.portafolio.crud.cloudinary.Image;
 import com.portafolio.security.entity.User;
 
 public class PersonalInformationDto {
@@ -19,33 +19,26 @@ public class PersonalInformationDto {
 
 	@NotBlank
     private String name;
-    private String picture;
     private String degree;
     private String summary;
     @NotBlank
     private int userId;
     private String username;
+    private Image image;
 
 	public PersonalInformationDto() {
 	}
 
-	public PersonalInformationDto(@NotNull String name, String picture, String degree, String summary, User user) {
-		this.name = name;
-		this.picture = picture;
-		this.degree = degree;
-		this.summary = summary;
-	}
-	
-	
-	
-	public PersonalInformationDto(@NotBlank String name, String picture, String degree, String summary,
-			String username) {
+		
+	public PersonalInformationDto(@NotBlank String name, String degree, String summary, @NotBlank int userId,
+			String username, Image image) {
 		super();
 		this.name = name;
-		this.picture = picture;
 		this.degree = degree;
 		this.summary = summary;
+		this.userId = userId;
 		this.username = username;
+		this.image = image;
 	}
 	
 
@@ -72,13 +65,13 @@ public class PersonalInformationDto {
 	public void setName(String name) {
 		this.name = name;
 	}
-
-	public String getPicture() {
-		return picture;
+	
+	public Image getImage() {
+		return image;
 	}
 
-	public void setPicture(String picture) {
-		this.picture = picture;
+	public void setImage(Image image) {
+		this.image = image;
 	}
 
 	public String getDegree() {
