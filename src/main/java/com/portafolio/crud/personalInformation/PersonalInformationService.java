@@ -1,5 +1,7 @@
 package com.portafolio.crud.personalInformation;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,23 +17,15 @@ public class PersonalInformationService {
         repository.save(personalInformation);
     }
 
-    public void delete(int id){
+    public void delete(Long id){
         repository.deleteById(id);
     }
 
-    public boolean existsByUserId(int userId){
-        return repository.existsByUserId(userId);
-    }
-
-	public boolean existsById(int id) {
+	public boolean existsById(Long id) {
 		return repository.existsById(id);
 	}
-
-	public PersonalInformation findByUserId(int userId) {
-		return repository.findByUserId(userId);
-	}
-
-	public PersonalInformation findById(int id) {
+	
+	public Optional<PersonalInformation> findById(Long id) {
 		return repository.findById(id);
 	}
 

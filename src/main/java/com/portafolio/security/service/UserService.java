@@ -1,6 +1,5 @@
 package com.portafolio.security.service;
 
-import com.portafolio.crud.personalInformation.PersonalInformation;
 import com.portafolio.security.entity.User;
 import com.portafolio.security.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +18,10 @@ public class UserService {
     public Optional<User> getByUsername(String username){
         return userRepository.findByUsername(username);
     }
+    
+    public Optional<User> getById(Long id){
+        return userRepository.findById(id);
+    }
 
     public boolean existsByUsername(String username){
         return userRepository.existsByUsername(username);
@@ -32,8 +35,8 @@ public class UserService {
         userRepository.save(usuario);
     }
 
-	public boolean existsById(int id) {
+	public boolean existsById(Long id) {
 		return userRepository.existsById(id);
 	}
-	
+
 }

@@ -1,17 +1,15 @@
 package com.portafolio.crud.personalInformation;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface PersonalInformationRepository extends JpaRepository<PersonalInformation, Integer>{
+public interface PersonalInformationRepository extends JpaRepository<PersonalInformation, Long>{
 
-	PersonalInformation findById(int id);
-
-	void deleteById(int id);
-
-	boolean existsByUserId(int id);
-
-	PersonalInformation findByUserId(int id);
+	Optional<PersonalInformation> findById(Long id);
+	
+	void deleteById(Long id);
 
 }

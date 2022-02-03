@@ -3,12 +3,14 @@ package com.portafolio.crud.personalInformation;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.imageio.ImageIO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.portafolio.crud.cloudinary.CloudinaryService;
 import com.portafolio.crud.cloudinary.Image;
+import com.portafolio.security.entity.User;
 import com.portafolio.security.service.UserService;
 import com.portafolio.util.Message;
 
@@ -41,106 +44,91 @@ public class PersonalInformationController {
     CloudinaryService cloudinaryService;
 	
 
+    /*
+     * Get with user id
+     * */
     @GetMapping("/get/{username}")
     public ResponseEntity<PersonalInformation> getOne(@PathVariable("username") String username){
-    	int id = userService.getByUsername(username).get().getId();
-    	if(!personalInformationService.existsByUserId(id)) {
-    		return new ResponseEntity(new Message("there is not information"), HttpStatus.BAD_REQUEST);
+    	
+    	if (userService.getByUsername(username).get().getPersonalInformation() != null) {
+    		Optional<PersonalInformation> personalInformation = 
+    				personalInformationService.findById(userService.getByUsername(username).get().getPersonalInformation().getId());
+    		return new ResponseEntity(personalInformation, HttpStatus.OK);
     	}else {
-	        PersonalInformation personalInformation = personalInformationService.findByUserId(id);
-	        return new ResponseEntity(personalInformation, HttpStatus.OK);
+    		return new ResponseEntity(new Message("there is not information"), HttpStatus.BAD_REQUEST);
     	}
+    	
     }
 
 
     /*
-	 * Create a new personal information, only when it doesn't exit.
-	 * Use the username to find the id of the user, so this must be
-	 * in the request body
-	 * */
-    @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody PersonalInformationDto personalInformationDto){
+	 * Create or update personal information with the user id
+	 * */   
+    @PostMapping("/create/{username}")
+    public ResponseEntity<?> create(@PathVariable("username") String username, @RequestBody PersonalInformationDto personalInformationDto){
+    	if(StringUtils.isEmpty(personalInformationDto.getName()))
+            return new ResponseEntity(new Message("the name is necessary"), HttpStatus.BAD_REQUEST);
     	
-    	int id = userService.getByUsername(personalInformationDto.getUsername()).get().getId();
+    	User user = userService.getByUsername(username).get();
+    	PersonalInformation personalInformation = new PersonalInformation();
+    	// only get personal information if exists
+    	if (user.getPersonalInformation() != null)
+    		personalInformation = user.getPersonalInformation();
     	
-    	if(personalInformationService.existsByUserId(id)) {
-    		return new ResponseEntity(new Message("the personal information exists, update it"), HttpStatus.BAD_REQUEST);
-    	}else {
-    		if(StringUtils.isEmpty(personalInformationDto.getName()))
-	            return new ResponseEntity(new Message("the name is necessary"), HttpStatus.BAD_REQUEST);
-	        
-	        PersonalInformation personalInformation = new PersonalInformation(
-	        		personalInformationDto.getName(), 
-	        		personalInformationDto.getDegree(),
-	        		personalInformationDto.getSummary(),
-	        		id,
-	        		new Image());
-	        personalInformationService.save(personalInformation);
-	        return new ResponseEntity(new Message("personalInformation created"), HttpStatus.OK);
-    	}
-       
+    	personalInformation.setName(personalInformationDto.getName());
+    	personalInformation.setDegree(personalInformationDto.getDegree());
+    	personalInformation.setSummary(personalInformationDto.getSummary());
+    	personalInformation.setImage(personalInformationDto.getImage());
+    	
+	    user.setPersonalInformation(personalInformation);
+	    userService.save(user);
+	    
+	    return new ResponseEntity(new Message("personalInformation created"), HttpStatus.OK);
+	   
     }
 
     /*
      * Update only the image
      * */
-    @PutMapping("/update-image/{id}")
-    public ResponseEntity<?> update(@PathVariable("id") int id, @RequestParam MultipartFile multipartFile) throws IOException{
-    	
-    	if(!personalInformationService.existsById(id)) {
-    		return new ResponseEntity(new Message("The personal information not exists"), HttpStatus.BAD_REQUEST);
-        }
+    @PutMapping("/update-image/{username}")
+    public ResponseEntity<?> update(@PathVariable("username") String username, @RequestParam MultipartFile multipartFile) throws IOException{
     	
         // get image 
     	Image image = new Image();
         BufferedImage bi = ImageIO.read(multipartFile.getInputStream());
-        if(bi == null){
+        if(bi == null)
         	return new ResponseEntity(new Message("Imagen no válida"), HttpStatus.BAD_REQUEST);
-        }else {
-        	// find, so upload
-        	Map result = cloudinaryService.upload(multipartFile);
-        	image.setName((String)result.get("original_filename"));
-        	image.setImageUrl((String)result.get("url"));
-        	image.setImageId((String)result.get("public_id"));
-        }
+        	
+        // save image in cloudinary and set the properties
+    	Map result = cloudinaryService.upload(multipartFile);
+    	image.setName((String)result.get("original_filename"));
+    	image.setImageUrl((String)result.get("url"));
+    	image.setImageId((String)result.get("public_id"));
         
-        PersonalInformation personalInformation = new PersonalInformation();
-        personalInformation = personalInformationService.findById(id);
+    	// update user with the image
+    	User user = userService.getByUsername(username).get();
+    	PersonalInformation personalInformation = new PersonalInformation();
+    	personalInformation = user.getPersonalInformation();
         personalInformation.setImage(image);
-        personalInformationService.save(personalInformation);
+        userService.save(user);
+        	
         return new ResponseEntity(new Message("personalInformation updated"), HttpStatus.OK);
     }
     
-    /*
-     * Update only the text
-     * */
-    @PutMapping("/update")
-    public ResponseEntity<?> update(@RequestBody PersonalInformationDto personalInformationDto) throws IOException{
-    	
-    	if(!personalInformationService.existsById(personalInformationDto.getId())) {
-    		return new ResponseEntity(new Message("The personal information not exists"), HttpStatus.BAD_REQUEST);
-        }
-    	
-        if(StringUtils.isEmpty(personalInformationDto.getName()))
-            return new ResponseEntity(new Message("the name is necessary"), HttpStatus.BAD_REQUEST);
-       
-        PersonalInformation personalInformation = new PersonalInformation();
-        personalInformation = personalInformationService.findById(personalInformationDto.getId());
-        personalInformation.setName(personalInformationDto.getName());
-        personalInformation.setDegree(personalInformationDto.getDegree());
-        personalInformation.setSummary(personalInformationDto.getSummary());
-        personalInformationService.save(personalInformation);
-        return new ResponseEntity(new Message("personalInformation updated"), HttpStatus.OK);
-    }
     
-    @DeleteMapping("/delete")
-    public ResponseEntity<?> delete(@RequestBody PersonalInformationDto personalInformationDto){
+    @DeleteMapping("/delete/{username}")
+    public ResponseEntity<?> delete(@PathVariable("username") String username, @RequestBody PersonalInformationDto personalInformationDto){
     	
-    	if(!personalInformationService.existsById(personalInformationDto.getId())) {
+    	User user = userService.getByUsername(username).get();
+    	// if theres is not information
+    	if(user.getPersonalInformation() == null) {
     		return new ResponseEntity(new Message("The personal information not exists"), HttpStatus.BAD_REQUEST);
         }
        
-        personalInformationService.delete(personalInformationDto.getId());
+    	
+        personalInformationService.delete(user.getPersonalInformation().getId());
+        user.setPersonalInformation(null);
+        userService.save(user);
         return new ResponseEntity(new Message("personalInformation deleted"), HttpStatus.OK);
     }
     

@@ -8,9 +8,10 @@ import javax.persistence.Id;
 
 @Entity
 public class Image {
+	
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    private Long id;
     private String name;
     private String imageUrl;
     private String imageId;
@@ -24,11 +25,11 @@ public class Image {
         this.imageId = imageId;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

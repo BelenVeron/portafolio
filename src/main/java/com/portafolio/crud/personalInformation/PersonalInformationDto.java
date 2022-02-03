@@ -8,12 +8,12 @@ import com.portafolio.security.entity.User;
 
 public class PersonalInformationDto {
 
-	private int id;
-	public int getId() {
+	private Long id;
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -21,8 +21,6 @@ public class PersonalInformationDto {
     private String name;
     private String degree;
     private String summary;
-    @NotBlank
-    private int userId;
     private String username;
     private Image image;
 
@@ -30,13 +28,12 @@ public class PersonalInformationDto {
 	}
 
 		
-	public PersonalInformationDto(@NotBlank String name, String degree, String summary, @NotBlank int userId,
+	public PersonalInformationDto(@NotBlank String name, String degree, String summary,
 			String username, Image image) {
 		super();
 		this.name = name;
 		this.degree = degree;
 		this.summary = summary;
-		this.userId = userId;
 		this.username = username;
 		this.image = image;
 	}
@@ -48,14 +45,6 @@ public class PersonalInformationDto {
 
 	public void setUsername(String username) {
 		this.username = username;
-	}
-
-	public int getUserId() {
-		return userId;
-	}
-
-	public void setUserId(int userId) {
-		this.userId = userId;
 	}
 
 	public String getName() {

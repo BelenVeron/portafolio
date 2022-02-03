@@ -16,16 +16,14 @@ import com.portafolio.crud.cloudinary.Image;
 public class PersonalInformation {
 	
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+	@GeneratedValue(strategy=GenerationType.AUTO)
+    private Long id;
 	@NotNull
     private String name;
     private String degree;
     @Column(columnDefinition = "MEDIUMTEXT")
     private String summary;
     
-    @Column(name="user_id")
-    private int userId;
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "image_id", referencedColumnName = "id")
     private Image image;
@@ -36,29 +34,17 @@ public class PersonalInformation {
 
 	
 
-	public PersonalInformation(@NotNull String name, String degree, String summary, int userId, Image image) {
+	public PersonalInformation(@NotNull String name, String degree, String summary) {
 		this.name = name;
 		this.degree = degree;
 		this.summary = summary;
-		this.userId = userId;
-		this.image = image;
 	}
 
-
-
-	public int getUserId() {
-		return userId;
-	}
-
-	public void setUserId(int userId) {
-		this.userId = userId;
-	}
-
-	public int getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 

@@ -7,9 +7,10 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 public class Role {
+	
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    private Long id;
     @NotNull
     @Enumerated(EnumType.STRING)
     private RoleName roleName;
@@ -21,11 +22,11 @@ public class Role {
         this.roleName = roleName;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
