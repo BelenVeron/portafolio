@@ -37,7 +37,7 @@ public class WorkExperience {
     
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "image_id", referencedColumnName = "id")
-    private Image logo;
+    private Image image;
     
     @Column(columnDefinition = "MEDIUMTEXT")
     private String description;
@@ -51,14 +51,14 @@ public class WorkExperience {
 	public WorkExperience() {
 	}
 
-	public WorkExperience(@NotNull String degree, LocalDate start, LocalDate end, boolean inProgress, Image logo,
+	public WorkExperience(@NotNull String degree, LocalDate start, LocalDate end, boolean inProgress, Image image,
 			String description, User user) {
 		super();
 		this.degree = degree;
 		this.start = start;
 		this.end = end;
 		this.inProgress = inProgress;
-		this.logo = logo;
+		this.image = image;
 		this.description = description;
 		this.user = user;
 	}
@@ -120,13 +120,13 @@ public class WorkExperience {
 	}
 
 
-	public Image getLogo() {
-		return logo;
+	public Image getImage() {
+		return image;
 	}
 
 
-	public void setLogo(Image image) {
-		this.logo = image;
+	public void setImage(Image image) {
+		this.image = image;
 	}
 
 

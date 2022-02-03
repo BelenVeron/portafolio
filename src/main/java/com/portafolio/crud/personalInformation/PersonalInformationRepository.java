@@ -12,4 +12,6 @@ public interface PersonalInformationRepository extends JpaRepository<PersonalInf
 	
 	void deleteById(Long id);
 
+	Optional<PersonalInformation> findByUserId(Long id);
+
 }

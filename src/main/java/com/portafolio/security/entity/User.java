@@ -33,12 +33,6 @@ public class User {
     inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
     
-    // user information
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "personal_information_id", referencedColumnName = "id")
-    private PersonalInformation personalInformation;
-    
-    
     // constructor, getters and setters
     public User() {
     }
@@ -49,14 +43,6 @@ public class User {
 		this.username = username;
 		this.email = email;
 		this.password = password;
-	}
-
-	public PersonalInformation getPersonalInformation() {
-		return personalInformation;
-	}
-
-	public void setPersonalInformation(PersonalInformation personalInformation) {
-		this.personalInformation = personalInformation;
 	}
 
 	public Long getId() {

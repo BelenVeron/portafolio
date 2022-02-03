@@ -49,13 +49,13 @@ public class PersonalInformationController {
      * */
     @GetMapping("/get/{username}")
     public ResponseEntity<PersonalInformation> getOne(@PathVariable("username") String username){
-    	
-    	if (userService.getByUsername(username).get().getPersonalInformation() != null) {
-    		Optional<PersonalInformation> personalInformation = 
-    				personalInformationService.findById(userService.getByUsername(username).get().getPersonalInformation().getId());
-    		return new ResponseEntity(personalInformation, HttpStatus.OK);
-    	}else {
+    
+    	if (personalInformationService.findByUserId(userService.getByUsername(username).get().getId()).isEmpty()) {
     		return new ResponseEntity(new Message("there is not information"), HttpStatus.BAD_REQUEST);
+    	}else {
+    		Optional<PersonalInformation> personalInformation = 
+    				personalInformationService.findByUserId(userService.getByUsername(username).get().getId());
+    		return new ResponseEntity(personalInformation, HttpStatus.OK);
     	}
     	
     }
@@ -63,25 +63,24 @@ public class PersonalInformationController {
 
     /*
 	 * Create or update personal information with the user id
-	 * */   
+	 * */ 
     @PostMapping("/create/{username}")
     public ResponseEntity<?> create(@PathVariable("username") String username, @RequestBody PersonalInformationDto personalInformationDto){
     	if(StringUtils.isEmpty(personalInformationDto.getName()))
             return new ResponseEntity(new Message("the name is necessary"), HttpStatus.BAD_REQUEST);
     	
-    	User user = userService.getByUsername(username).get();
     	PersonalInformation personalInformation = new PersonalInformation();
     	// only get personal information if exists
-    	if (user.getPersonalInformation() != null)
-    		personalInformation = user.getPersonalInformation();
+    	if (!personalInformationService.findByUserId(userService.getByUsername(username).get().getId()).isEmpty())
+    		personalInformation = personalInformationService.findByUserId(userService.getByUsername(username).get().getId()).get();
     	
     	personalInformation.setName(personalInformationDto.getName());
     	personalInformation.setDegree(personalInformationDto.getDegree());
     	personalInformation.setSummary(personalInformationDto.getSummary());
     	personalInformation.setImage(personalInformationDto.getImage());
+    	personalInformation.setUser(userService.getByUsername(username).get());
     	
-	    user.setPersonalInformation(personalInformation);
-	    userService.save(user);
+	    personalInformationService.save(personalInformation);
 	    
 	    return new ResponseEntity(new Message("personalInformation created"), HttpStatus.OK);
 	   
@@ -105,30 +104,26 @@ public class PersonalInformationController {
     	image.setImageUrl((String)result.get("url"));
     	image.setImageId((String)result.get("public_id"));
         
-    	// update user with the image
-    	User user = userService.getByUsername(username).get();
-    	PersonalInformation personalInformation = new PersonalInformation();
-    	personalInformation = user.getPersonalInformation();
+    	// update the image
+    	PersonalInformation personalInformation = 
+    			personalInformationService.findByUserId(userService.getByUsername(username).get().getId()).get();
         personalInformation.setImage(image);
-        userService.save(user);
+        personalInformationService.save(personalInformation);
         	
         return new ResponseEntity(new Message("personalInformation updated"), HttpStatus.OK);
     }
     
     
-    @DeleteMapping("/delete/{username}")
-    public ResponseEntity<?> delete(@PathVariable("username") String username, @RequestBody PersonalInformationDto personalInformationDto){
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> delete(@PathVariable("id") Long id, @RequestBody PersonalInformationDto personalInformationDto){
     	
-    	User user = userService.getByUsername(username).get();
     	// if theres is not information
-    	if(user.getPersonalInformation() == null) {
+    	if(!personalInformationService.existsById(id)) {
     		return new ResponseEntity(new Message("The personal information not exists"), HttpStatus.BAD_REQUEST);
         }
-       
-    	
-        personalInformationService.delete(user.getPersonalInformation().getId());
-        user.setPersonalInformation(null);
-        userService.save(user);
+         	
+        personalInformationService.delete(id);
+  
         return new ResponseEntity(new Message("personalInformation deleted"), HttpStatus.OK);
     }
     

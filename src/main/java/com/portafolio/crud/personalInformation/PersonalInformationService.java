@@ -29,4 +29,8 @@ public class PersonalInformationService {
 		return repository.findById(id);
 	}
 
+	public Optional<PersonalInformation> findByUserId(Long id) {
+		return repository.findByUserId(id);
+	}
+
 }

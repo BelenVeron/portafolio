@@ -11,6 +11,7 @@ import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 
 import com.portafolio.crud.cloudinary.Image;
+import com.portafolio.security.entity.User;
 
 @Entity
 public class PersonalInformation {
@@ -27,6 +28,11 @@ public class PersonalInformation {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "image_id", referencedColumnName = "id")
     private Image image;
+    
+    // user information
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
 
 
 	public PersonalInformation() {
@@ -34,11 +40,25 @@ public class PersonalInformation {
 
 	
 
-	public PersonalInformation(@NotNull String name, String degree, String summary) {
+	public PersonalInformation(@NotNull String name, String degree, String summary, User user) {
 		this.name = name;
 		this.degree = degree;
 		this.summary = summary;
+		this.user = user;
 	}
+	
+	/*
+	 * Only return the id of the user to security
+	 * */
+	public Long getUserId(User user) {
+		return user.getId();
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+
 
 	public Long getId() {
 		return id;

@@ -80,7 +80,7 @@ public class WorkExperienceController {
     	workExperience.setStart(workExperienceDto.getStart());
     	workExperience.setEnd(workExperienceDto.getEnd());
     	workExperience.setInProgress(workExperienceDto.getInProgress());
-    	workExperience.setLogo(workExperienceDto.getLogo());
+    	workExperience.setImage(workExperienceDto.getImage());
     	workExperience.setDescription(workExperienceDto.getDescription());
     	workExperience.setUser(user);
     	
@@ -129,7 +129,7 @@ public class WorkExperienceController {
         
     	// update user with the image
     	WorkExperience workExperience = workExperienceService.findById(id).get();
-        workExperience.setLogo(image);
+        workExperience.setImage(image);
         workExperienceService.save(workExperience);
         	
         return new ResponseEntity(new Message("workExperience updated"), HttpStatus.OK);
