@@ -77,7 +77,6 @@ public class PersonalInformationController {
     	personalInformation.setName(personalInformationDto.getName());
     	personalInformation.setDegree(personalInformationDto.getDegree());
     	personalInformation.setSummary(personalInformationDto.getSummary());
-    	personalInformation.setImage(personalInformationDto.getImage());
     	personalInformation.setUser(userService.getByUsername(username).get());
     	
 	    personalInformationService.save(personalInformation);
@@ -115,7 +114,7 @@ public class PersonalInformationController {
     
     
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") Long id, @RequestBody PersonalInformationDto personalInformationDto){
+    public ResponseEntity<?> delete(@PathVariable("id") Long id){
     	
     	// if theres is not information
     	if(!personalInformationService.existsById(id)) {

@@ -63,6 +63,8 @@ public class MainSecurity extends WebSecurityConfigurerAdapter {
                 		"/index",
                 		"/personalInformation/get/**",
                 		"/laboralExperience/get/**",
+                		"/education/get/**",
+                		"/skill/get/**",
                 		"/user/get/**"
                 ).permitAll()
                 .anyRequest().authenticated()

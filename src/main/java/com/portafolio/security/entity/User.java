@@ -5,7 +5,6 @@ import javax.validation.constraints.NotNull;
 
 import com.portafolio.crud.cloudinary.Image;
 import com.portafolio.crud.personalInformation.PersonalInformation;
-import com.portafolio.crud.workExperience.WorkExperience;
 
 import java.util.ArrayList;
 import java.util.HashSet;

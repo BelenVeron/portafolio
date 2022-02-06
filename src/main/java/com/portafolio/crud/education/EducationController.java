@@ -1,4 +1,4 @@
-package com.portafolio.crud.workExperience;
+package com.portafolio.crud.education;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -31,12 +31,12 @@ import com.portafolio.security.service.UserService;
 import com.portafolio.util.Message;
 
 @RestController
-@RequestMapping("/workExperience")
+@RequestMapping("/education")
 @CrossOrigin(origins = "*")
-public class WorkExperienceController {
-
+public class EducationController {
+	
 	@Autowired
-    WorkExperienceService workExperienceService;
+    EducationService educationService;
 	@Autowired
 	UserService userService;
     @Autowired
@@ -47,9 +47,9 @@ public class WorkExperienceController {
      * Get with username
      * */
     @GetMapping("/get/{username}")
-    public ResponseEntity<List<WorkExperience>> getList(@PathVariable("username") String username){
+    public ResponseEntity<List<Education>> getList(@PathVariable("username") String username){
     	
-    	Set<WorkExperience> list = workExperienceService.findByUserId(
+    	Set<Education> list = educationService.findByUserId(
     				userService.getByUsername(username).get().getId());
     	return new ResponseEntity(list, HttpStatus.OK);
     	
@@ -60,23 +60,22 @@ public class WorkExperienceController {
 	 * Create work experience with the username
 	 * */   
     @PostMapping("/create/{username}")
-    public ResponseEntity<?> create(@PathVariable("username") String username, @RequestBody WorkExperience workExperienceDto){
-    	if(StringUtils.isEmpty(workExperienceDto.getDegree()))
+    public ResponseEntity<?> create(@PathVariable("username") String username, @RequestBody Education educationDto){
+    	if(StringUtils.isEmpty(educationDto.getDegree()))
             return new ResponseEntity(new Message("the name is necessary"), HttpStatus.BAD_REQUEST);
     	
     	User user = userService.getByUsername(username).get();
-    	WorkExperience workExperience = new WorkExperience();
+    	Education education = new Education();
     	
-    	workExperience.setDegree(workExperienceDto.getDegree());
-    	workExperience.setStart(workExperienceDto.getStart());
-    	workExperience.setEnd(workExperienceDto.getEnd());
-    	workExperience.setInProgress(workExperienceDto.getInProgress());
-    	workExperience.setDescription(workExperienceDto.getDescription());
-    	workExperience.setUser(user);
+    	education.setInstitution(educationDto.getInstitution());
+    	education.setDegree(educationDto.getDegree());
+    	education.setDate(educationDto.getDate());
+    	education.setPeriod(educationDto.getPeriod());
+    	education.setUser(user);
     	
-	    workExperienceService.save(workExperience);
+	    educationService.save(education);
 	    
-	    return new ResponseEntity(new Message("workExperience created"), HttpStatus.OK);
+	    return new ResponseEntity(new Message("education created"), HttpStatus.OK);
 	   
     }
     
@@ -84,19 +83,18 @@ public class WorkExperienceController {
      * Update only the text
      * */
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody WorkExperienceDto workExperienceDto) throws IOException{
+    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody EducationDto educationDto) throws IOException{
     	
-        WorkExperience workExperience = workExperienceService.findById(id).get();
+        Education education = educationService.findById(id).get();
     	
-    	workExperience.setDegree(workExperienceDto.getDegree());
-    	workExperience.setStart(workExperienceDto.getStart());
-    	workExperience.setEnd(workExperienceDto.getEnd());
-    	workExperience.setInProgress(workExperienceDto.getInProgress());
-    	workExperience.setDescription(workExperienceDto.getDescription());
+        education.setInstitution(educationDto.getInstitution());
+    	education.setDegree(educationDto.getDegree());
+    	education.setDate(educationDto.getDate());
+    	education.setPeriod(educationDto.getPeriod());
     	
-    	workExperienceService.save(workExperience);
+    	educationService.save(education);
         	
-        return new ResponseEntity(new Message("workExperience updated"), HttpStatus.OK);
+        return new ResponseEntity(new Message("education updated"), HttpStatus.OK);
     }
 
     /*
@@ -118,19 +116,19 @@ public class WorkExperienceController {
     	image.setImageId((String)result.get("public_id"));
         
     	// update user with the image
-    	WorkExperience workExperience = workExperienceService.findById(id).get();
-        workExperience.setImage(image);
-        workExperienceService.save(workExperience);
+    	Education education = educationService.findById(id).get();
+        education.setImage(image);
+        educationService.save(education);
         	
-        return new ResponseEntity(new Message("workExperience updated"), HttpStatus.OK);
+        return new ResponseEntity(new Message("education updated"), HttpStatus.OK);
     }
   
     
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") Long id){
     	
-        workExperienceService.delete(id);
-        return new ResponseEntity(new Message("workExperience deleted"), HttpStatus.OK);
+        educationService.delete(id);
+        return new ResponseEntity(new Message("education deleted"), HttpStatus.OK);
     }
-    
+
 }
