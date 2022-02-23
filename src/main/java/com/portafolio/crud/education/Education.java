@@ -1,9 +1,8 @@
-package com.portafolio.crud.workExperience;
+package com.portafolio.crud.education;
 
 import java.time.LocalDate;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -22,129 +21,98 @@ import com.portafolio.crud.cloudinary.Image;
 import com.portafolio.security.entity.User;
 
 @Entity
-public class WorkExperience {
+public class Education {
 
 	@Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
-    @NotNull
+	@NotNull
+	private String institution;
     private String degree;
     @JsonFormat(pattern="dd-MM-yyyy")
-    private LocalDate start;
-    @JsonFormat(pattern="dd-MM-yyyy")
-    private LocalDate end;
-    private boolean inProgress;
+    private LocalDate date;
+    private String Period;
     
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "image_id", referencedColumnName = "id")
     private Image image;
     
-    @Column(columnDefinition = "MEDIUMTEXT")
-    private String description;
-    
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
-    
-    
-	public WorkExperience() {
+
+	public Education() {
 	}
 
-	public WorkExperience(@NotNull String degree, LocalDate start, LocalDate end, boolean inProgress, Image image,
-			String description, User user) {
+	public Education(@NotNull String institution, String degree, LocalDate date, String period, Image image,
+			User user) {
 		super();
+		this.institution = institution;
 		this.degree = degree;
-		this.start = start;
-		this.end = end;
-		this.inProgress = inProgress;
+		this.date = date;
+		Period = period;
 		this.image = image;
-		this.description = description;
 		this.user = user;
 	}
-
-
-
-	public void setUser(User user) {
-		this.user = user;
-	}
-
 
 	public Long getId() {
 		return id;
 	}
 
-
 	public void setId(Long id) {
 		this.id = id;
 	}
 
+	public String getInstitution() {
+		return institution;
+	}
+
+	public void setInstitution(String institution) {
+		this.institution = institution;
+	}
 
 	public String getDegree() {
 		return degree;
 	}
 
-
 	public void setDegree(String degree) {
 		this.degree = degree;
 	}
 
-
-	public LocalDate getStart() {
-		return start;
+	public LocalDate getDate() {
+		return date;
 	}
 
-
-	public void setStart(LocalDate start) {
-		this.start = start;
+	public void setDate(LocalDate date) {
+		this.date = date;
 	}
 
-
-	public LocalDate getEnd() {
-		return end;
+	public String getPeriod() {
+		return Period;
 	}
 
-
-	public void setEnd(LocalDate end) {
-		this.end = end;
+	public void setPeriod(String period) {
+		Period = period;
 	}
-
-
-	public boolean getInProgress() {
-		return inProgress;
-	}
-
-
-	public void setInProgress(boolean inProgress) {
-		this.inProgress = inProgress;
-	}
-
 
 	public Image getImage() {
 		return image;
 	}
 
-
 	public void setImage(Image image) {
 		this.image = image;
 	}
 
-
-	public String getDescription() {
-		return description;
+	public Long getUserId(User user) {
+		return user.getId();
 	}
 
-
-	public void setDescription(String description) {
-		this.description = description;
+	public void setUser(User user) {
+		this.user = user;
 	}
-
-	@Override
-	public String toString() {
-		return "WorkExperience [id=" + id + ", degree=" + degree + ", start=" + start + ", end=" + end + ", inProgress="
-				+ inProgress + ", image=" + image + ", description=" + description + ", user=" + user + "]";
-	}
-    
 	
-
+	
+    
+    
 }

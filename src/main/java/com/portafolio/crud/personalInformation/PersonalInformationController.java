@@ -1,39 +1,32 @@
 package com.portafolio.crud.personalInformation;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.Map;
 import java.util.Optional;
 
-import javax.imageio.ImageIO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.portafolio.crud.cloudinary.CloudinaryService;
 import com.portafolio.crud.cloudinary.Image;
-import com.portafolio.security.entity.User;
+import com.portafolio.crud.cloudinary.ImageService;
 import com.portafolio.security.service.UserService;
 import com.portafolio.util.Message;
 
 
 @RestController
 @RequestMapping("/personalInformation")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class PersonalInformationController {
 
 	@Autowired
@@ -42,6 +35,8 @@ public class PersonalInformationController {
 	UserService userService;
     @Autowired
     CloudinaryService cloudinaryService;
+    @Autowired
+    ImageService imageService;
 	
 
     /*
@@ -65,19 +60,30 @@ public class PersonalInformationController {
 	 * Create or update personal information with the user id
 	 * */ 
     @PostMapping("/create/{username}")
-    public ResponseEntity<?> create(@PathVariable("username") String username, @RequestBody PersonalInformationDto personalInformationDto){
+    public ResponseEntity<?> create(@PathVariable("username") String username, @RequestBody PersonalInformationDto personalInformationDto) throws IOException{
     	if(StringUtils.isEmpty(personalInformationDto.getName()))
             return new ResponseEntity(new Message("the name is necessary"), HttpStatus.BAD_REQUEST);
     	
+    	Image image = new Image();
     	PersonalInformation personalInformation = new PersonalInformation();
     	// only get personal information if exists
-    	if (!personalInformationService.findByUserId(userService.getByUsername(username).get().getId()).isEmpty())
+    	if (!personalInformationService.findByUserId(userService.getByUsername(username).get().getId()).isEmpty()) {
     		personalInformation = personalInformationService.findByUserId(userService.getByUsername(username).get().getId()).get();
+        	cloudinaryService.delete(personalInformation.getImage().getImageId());
+    		image = imageService.save(personalInformationDto.getImage());
+    	}else {
+    		// without image, to save the first information
+    		Image imageDefault = imageService.getOne((long) 72).get();
+    		image.setImageId(imageDefault.getImageId());
+    		image.setImageUrl(imageDefault.getImageUrl());
+    		image.setName(imageDefault.getName());
+    		image = imageService.save(image);
+    	}
     	
     	personalInformation.setName(personalInformationDto.getName());
     	personalInformation.setDegree(personalInformationDto.getDegree());
     	personalInformation.setSummary(personalInformationDto.getSummary());
-    	personalInformation.setImage(personalInformationDto.getImage());
+    	personalInformation.setImage(image);
     	personalInformation.setUser(userService.getByUsername(username).get());
     	
 	    personalInformationService.save(personalInformation);
@@ -86,42 +92,15 @@ public class PersonalInformationController {
 	   
     }
 
-    /*
-     * Update only the image
-     * */
-    @PutMapping("/update-image/{username}")
-    public ResponseEntity<?> update(@PathVariable("username") String username, @RequestParam MultipartFile multipartFile) throws IOException{
-    	
-        // get image 
-    	Image image = new Image();
-        BufferedImage bi = ImageIO.read(multipartFile.getInputStream());
-        if(bi == null)
-        	return new ResponseEntity(new Message("Imagen no válida"), HttpStatus.BAD_REQUEST);
-        	
-        // save image in cloudinary and set the properties
-    	Map result = cloudinaryService.upload(multipartFile);
-    	image.setName((String)result.get("original_filename"));
-    	image.setImageUrl((String)result.get("url"));
-    	image.setImageId((String)result.get("public_id"));
-        
-    	// update the image
-    	PersonalInformation personalInformation = 
-    			personalInformationService.findByUserId(userService.getByUsername(username).get().getId()).get();
-        personalInformation.setImage(image);
-        personalInformationService.save(personalInformation);
-        	
-        return new ResponseEntity(new Message("personalInformation updated"), HttpStatus.OK);
-    }
-    
     
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") Long id, @RequestBody PersonalInformationDto personalInformationDto){
+    public ResponseEntity<?> delete(@PathVariable("id") Long id) throws IOException{
     	
     	// if theres is not information
     	if(!personalInformationService.existsById(id)) {
     		return new ResponseEntity(new Message("The personal information not exists"), HttpStatus.BAD_REQUEST);
         }
-         	
+        cloudinaryService.delete(personalInformationService.findById(id).get().getImage().getImageId());
         personalInformationService.delete(id);
   
         return new ResponseEntity(new Message("personalInformation deleted"), HttpStatus.OK);

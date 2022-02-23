@@ -1,4 +1,4 @@
-package com.portafolio.crud.workExperience;
+package com.portafolio.crud.education;
 
 import java.util.Optional;
 import java.util.Set;
@@ -6,19 +6,21 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class WorkExperienceService {
+@Transactional
+public class EducationService {
 
 	@Autowired
-	WorkExperienceRepository repository;
+	EducationRepository repository;
 	
-	public Set<WorkExperience> list(){
-        return (Set<WorkExperience>) repository.findAll();
+	public Set<Education> list(){
+        return (Set<Education>) repository.findAll();
     }
 
-    public void  save(WorkExperience workExperience){
-        repository.save(workExperience);
+    public void  save(Education education){
+        repository.save(education);
     }
 
     public void delete(Long id){
@@ -29,11 +31,11 @@ public class WorkExperienceService {
 		return repository.existsById(id);
 	}
 	
-	public Optional<WorkExperience> findById(Long id) {
+	public Optional<Education> findById(Long id) {
 		return repository.findById(id);
 	}
 
-	public Set<WorkExperience> findByUserId(Long id) {
+	public Set<Education> findByUserId(Long id) {
 		return repository.findByUserId(id);
 	}
 
