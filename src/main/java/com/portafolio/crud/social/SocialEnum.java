@@ -5,11 +5,11 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum SocialEnum {
 	
-	FACEBOOK("SOCIAL_1"),
-	YOUTUBE("SOCIAL_2"),
-	INSTAGRAM("SOCIAL_3"),
-	TWITTER("SOCIAL_4"),
-	LINKEDIN("SOCIAL_5");
+	FACEBOOK("facebook"),
+	YOUTUBE("youtube"),
+	INSTAGRAM("instagram"),
+	TWITTER("twitter"),
+	LINKEDIN("linkedin");
 	
 	private String social;
 	

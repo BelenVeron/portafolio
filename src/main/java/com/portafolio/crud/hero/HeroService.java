@@ -1,25 +1,18 @@
-package com.portafolio.crud.social;
+package com.portafolio.crud.hero;
 
 import java.util.Optional;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.portafolio.crud.social.Social;
-
 @Service
-public class SocialService {
+public class HeroService {
 	
 	@Autowired
-	SocialRepository repository;
-	
-	public Set<Social> list(){
-        return (Set<Social>) repository.findAll();
-    }
+	HeroRepository repository;
 
-    public void  save(Social social){
-        repository.save(social);
+    public void  save(Hero hero){
+        repository.save(hero);
     }
 
     public void delete(Long id){
@@ -30,12 +23,13 @@ public class SocialService {
 		return repository.existsById(id);
 	}
 	
-	public Optional<Social> findById(Long id) {
+	public Optional<Hero> findById(Long id) {
 		return repository.findById(id);
 	}
 
-	public Set<Social> findByUserId(Long id) {
+	public Optional<Hero> findByUserId(Long id) {
 		return repository.findByUserId(id);
 	}
+
 
 }

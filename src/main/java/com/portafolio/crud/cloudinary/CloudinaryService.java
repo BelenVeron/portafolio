@@ -2,6 +2,8 @@ package com.portafolio.crud.cloudinary;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,7 +33,15 @@ public class CloudinaryService {
         file.delete();
         return result;
     }
+    
+    @Async("asyncExecutor")
+    public Map uploadRemoteUrl(String url) throws IOException {
+        Map result = cloudinary.uploader().upload(url, 
+      		  ObjectUtils.emptyMap());
+        return result;
+    }
 
+    @Async("asyncExecutor")
     public Map delete(String id) throws IOException {
         Map result = cloudinary.uploader().destroy(id, ObjectUtils.emptyMap());
         return result;

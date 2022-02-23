@@ -1,12 +1,9 @@
-package com.portafolio.crud.education;
+package com.portafolio.crud.project;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.Map;
-import java.util.Set;
 import java.util.List;
-
-import javax.imageio.ImageIO;
+import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,62 +17,61 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.portafolio.crud.cloudinary.CloudinaryService;
 import com.portafolio.crud.cloudinary.Image;
 import com.portafolio.crud.cloudinary.ImageService;
+import com.portafolio.crud.education.Education;
 import com.portafolio.security.entity.User;
 import com.portafolio.security.service.UserService;
 import com.portafolio.util.Message;
 
+
 @RestController
-@RequestMapping("/education")
+@RequestMapping("/project")
 @CrossOrigin(origins = "*")
-public class EducationController {
+public class ProjectController {
 	
 	@Autowired
-    EducationService educationService;
+    ProjectService projectService;
 	@Autowired
 	UserService userService;
     @Autowired
     CloudinaryService cloudinaryService;
     @Autowired
     ImageService imageService;
-	
-	
 
     /*
-     * Get with username
+     * Get with user id
      * */
     @GetMapping("/get/{username}")
-    public ResponseEntity<List<Education>> getList(@PathVariable("username") String username){
+    public ResponseEntity<List<Project>> getList(@PathVariable("username") String username){
     	
-    	Set<Education> list = educationService.findByUserId(
+    	Set<Project> list = projectService.findByUserId(
     				userService.getByUsername(username).get().getId());
+    	
     	return new ResponseEntity(list, HttpStatus.OK);
     	
     }
 
 
     /*
-	 * Create work experience with the username
-	 * */   
+	 * Create or update personal information with the user id
+	 * */ 
     @PostMapping("/create/{username}")
-    public ResponseEntity<?> create(@PathVariable("username") String username, @RequestBody Education educationDto){
-    	if(StringUtils.isEmpty(educationDto.getDegree()))
+    public ResponseEntity<?> create(@PathVariable("username") String username, @RequestBody Project projectDto){
+    	if(StringUtils.isEmpty(projectDto.getName()))
             return new ResponseEntity(new Message("the name is necessary"), HttpStatus.BAD_REQUEST);
     	
     	User user = userService.getByUsername(username).get();
-    	Education education = new Education();
+    	Project project = new Project();
     	
-    	education.setInstitution(educationDto.getInstitution());
-    	education.setDegree(educationDto.getDegree());
-    	education.setDate(educationDto.getDate());
-    	education.setPeriod(educationDto.getPeriod());
-    	education.setUser(user);
+    	project.setName(projectDto.getName());
+    	project.setDate(projectDto.getDate());
+    	project.setDescription(projectDto.getDescription());
+    	project.setLink(projectDto.getLink());
+    	project.setUser(user);
     	
     	Image image = new Image();
     	Image imageDefault = imageService.getOne((long) 160).get();
@@ -83,43 +79,50 @@ public class EducationController {
 		image.setImageUrl(imageDefault.getImageUrl());
 		image.setName(imageDefault.getName());
 		image = imageService.save(image);
-		education.setImage(image);
+		project.setImage(image);
     	
-	    educationService.save(education);
+	    projectService.save(project);
 	    
-	    return new ResponseEntity(education, HttpStatus.OK);
+	    return new ResponseEntity(project, HttpStatus.OK);
 	   
     }
-    
+
     /*
-     * Update only the text
+     * Update only the image
      * */
     @PutMapping("/update")
-    public ResponseEntity<?> update(@RequestBody Education educationDto) throws IOException{
+    public ResponseEntity<?> update(@RequestBody Project projectDto) throws IOException{
+        
+    	Project project = projectService.findById(projectDto.getId()).get();
     	
-        Education education = educationService.findById(educationDto.getId()).get();
-    	
-        education.setInstitution(educationDto.getInstitution());
-    	education.setDegree(educationDto.getDegree());
-    	education.setDate(educationDto.getDate());
-    	education.setPeriod(educationDto.getPeriod());
+        project.setName(projectDto.getName());
+    	project.setDescription(projectDto.getDescription());
+    	project.setDate(projectDto.getDate());
+    	project.setLink(projectDto.getLink());
     	
     	// delete from cloudinary before update the image in database
-    	cloudinaryService.delete(educationService.findById(educationDto.getId()).get().getImage().getImageId());
-    	education.setImage(educationDto.getImage());
+    	cloudinaryService.delete(projectService.findById(projectDto.getId()).get().getImage().getImageId());
+    	project.setImage(projectDto.getImage());
     	
-    	educationService.save(education);
+    	projectService.save(project);
         	
-        return new ResponseEntity(education, HttpStatus.OK);
+        return new ResponseEntity(project, HttpStatus.OK);
     }
-  
+    
     
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") Long id) throws IOException{
     	
-    	cloudinaryService.delete(educationService.findById(id).get().getImage().getImageId());
-        educationService.delete(id);
-        return new ResponseEntity(new Message("education deleted"), HttpStatus.OK);
+    	// if theres is not information
+    	if(!projectService.existsById(id)) {
+    		return new ResponseEntity(new Message("The personal information not exists"), HttpStatus.BAD_REQUEST);
+        }
+         	
+    	cloudinaryService.delete(projectService.findById(id).get().getImage().getImageId());
+        projectService.delete(id);
+  
+        return new ResponseEntity(new Message("project deleted"), HttpStatus.OK);
     }
+    
 
 }

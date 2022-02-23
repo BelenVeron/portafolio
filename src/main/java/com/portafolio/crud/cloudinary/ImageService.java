@@ -18,19 +18,19 @@ public class ImageService {
         return imageRepository.findByOrderById();
     }
 
-    public Optional<Image> getOne(int id){
+    public Optional<Image> getOne(Long id){
         return imageRepository.findById(id);
     }
 
-    public void save(Image imagen){
-        imageRepository.save(imagen);
+    public Image save(Image imagen){
+        return imageRepository.save(imagen);
     }
 
-    public void delete(int id){
+    public void delete(Long id){
         imageRepository.deleteById(id);
     }
 
-    public boolean exists(int id){
+    public boolean exists(Long id){
         return imageRepository.existsById(id);
     }
 }

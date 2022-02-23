@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.portafolio.crud.cloudinary.CloudinaryService;
 import com.portafolio.crud.cloudinary.Image;
+import com.portafolio.crud.cloudinary.ImageService;
 import com.portafolio.security.entity.User;
 import com.portafolio.security.service.UserService;
 import com.portafolio.util.Message;
@@ -41,6 +42,8 @@ public class WorkExperienceController {
 	UserService userService;
     @Autowired
     CloudinaryService cloudinaryService;
+    @Autowired
+    ImageService imageService;
 	
 
     /*
@@ -74,19 +77,30 @@ public class WorkExperienceController {
     	workExperience.setDescription(workExperienceDto.getDescription());
     	workExperience.setUser(user);
     	
+    	// set a default image from the database, in this case
+    	// with id 160
+    	Image image = new Image();
+    	Image imageDefault = imageService.getOne((long) 160).get();
+		image.setImageId(imageDefault.getImageId());
+		image.setImageUrl(imageDefault.getImageUrl());
+		image.setName(imageDefault.getName());
+		image = imageService.save(image);
+		workExperience.setImage(image);
+		System.out.println("work: "+image);
+		
 	    workExperienceService.save(workExperience);
 	    
-	    return new ResponseEntity(new Message("workExperience created"), HttpStatus.OK);
+	    return new ResponseEntity(workExperience, HttpStatus.OK);
 	   
     }
     
     /*
-     * Update only the text
+     * complete update
      * */
-    @PutMapping("/update/{id}")
-    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody WorkExperienceDto workExperienceDto) throws IOException{
+    @PutMapping("/update")
+    public ResponseEntity<?> update(@RequestBody WorkExperienceDto workExperienceDto) throws IOException{
     	
-        WorkExperience workExperience = workExperienceService.findById(id).get();
+        WorkExperience workExperience = workExperienceService.findById(workExperienceDto.getId()).get();
     	
     	workExperience.setDegree(workExperienceDto.getDegree());
     	workExperience.setStart(workExperienceDto.getStart());
@@ -94,41 +108,20 @@ public class WorkExperienceController {
     	workExperience.setInProgress(workExperienceDto.getInProgress());
     	workExperience.setDescription(workExperienceDto.getDescription());
     	
+    	// delete from cloudinary before update the image in database
+    	cloudinaryService.delete(workExperienceService.findById(workExperienceDto.getId()).get().getImage().getImageId());
+    	workExperience.setImage(workExperienceDto.getImage());
+    	
     	workExperienceService.save(workExperience);
         	
-        return new ResponseEntity(new Message("workExperience updated"), HttpStatus.OK);
+        return new ResponseEntity(workExperience, HttpStatus.OK);
     }
 
-    /*
-     * Update only the image
-     * */
-    @PutMapping("/update-image/{id}")
-    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestParam MultipartFile multipartFile) throws IOException{
-    	
-        // get image 
-    	Image image = new Image();
-        BufferedImage bi = ImageIO.read(multipartFile.getInputStream());
-        if(bi == null)
-        	return new ResponseEntity(new Message("Imagen no válida"), HttpStatus.BAD_REQUEST);
-        	
-        // save image in cloudinary and set the properties
-    	Map result = cloudinaryService.upload(multipartFile);
-    	image.setName((String)result.get("original_filename"));
-    	image.setImageUrl((String)result.get("url"));
-    	image.setImageId((String)result.get("public_id"));
-        
-    	// update user with the image
-    	WorkExperience workExperience = workExperienceService.findById(id).get();
-        workExperience.setImage(image);
-        workExperienceService.save(workExperience);
-        	
-        return new ResponseEntity(new Message("workExperience updated"), HttpStatus.OK);
-    }
-  
     
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") Long id){
+    public ResponseEntity<?> delete(@PathVariable("id") Long id) throws IOException{
     	
+    	cloudinaryService.delete(workExperienceService.findById(id).get().getImage().getImageId());
         workExperienceService.delete(id);
         return new ResponseEntity(new Message("workExperience deleted"), HttpStatus.OK);
     }

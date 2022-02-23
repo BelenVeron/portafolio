@@ -28,6 +28,48 @@ public class Social {
     @JoinColumn(name = "user_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
+
+	public Social() {
+	}
+
+	public Social(@NotNull SocialEnum social, String link, User user) {
+		super();
+		this.social = social;
+		this.link = link;
+		this.user = user;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public SocialEnum getSocial() {
+		return social;
+	}
+
+	public void setSocial(SocialEnum social) {
+		this.social = social;
+	}
+
+	public String getLink() {
+		return link;
+	}
+
+	public void setLink(String link) {
+		this.link = link;
+	}
+
+	public Long getUserId(User user) {
+		return user.getId();
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
     
     
 }

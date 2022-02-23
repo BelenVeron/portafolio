@@ -66,24 +66,21 @@ public class SkillController {
     	
 	    skillService.save(skill);
 	    
-	    return new ResponseEntity(new Message("skill created"), HttpStatus.OK);
+	    return new ResponseEntity(skill, HttpStatus.OK);
 	   
     }
     
     /*
      * Update only the text
      * */
-    @PutMapping("/update/{id}")
-    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody SkillDto skillDto) throws IOException{
+    @PutMapping("/update")
+    public ResponseEntity<?> update(@RequestBody Skill skillDto) throws IOException{
     	
-        Skill skill = skillService.findById(id).get();
-    	
-        skill.setName(skillDto.getName());
+    	Skill skill = skillService.findById(skillDto.getId()).get();
+    	skill.setName(skillDto.getName());
     	skill.setPercent(skillDto.getPercent());
-    	
     	skillService.save(skill);
-        	
-        return new ResponseEntity(new Message("skill updated"), HttpStatus.OK);
+        return new ResponseEntity(skill, HttpStatus.OK);
     }
     
     

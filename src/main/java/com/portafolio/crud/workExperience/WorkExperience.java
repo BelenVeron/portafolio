@@ -138,6 +138,13 @@ public class WorkExperience {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+
+	@Override
+	public String toString() {
+		return "WorkExperience [id=" + id + ", degree=" + degree + ", start=" + start + ", end=" + end + ", inProgress="
+				+ inProgress + ", image=" + image + ", description=" + description + ", user=" + user + "]";
+	}
     
+	
 
 }
