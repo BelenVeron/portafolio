@@ -45,7 +45,7 @@ public class PersonalInformationController {
     @GetMapping("/get/{username}")
     public ResponseEntity<PersonalInformation> getOne(@PathVariable("username") String username){
     
-    	if (personalInformationService.findByUserId(userService.getByUsername(username).get().getId()).isEmpty()) {
+    	if (personalInformationService.findByUserId(userService.getByUsername(username).get().getId()).empty() == null) {
     		return new ResponseEntity(new Message("there is not information"), HttpStatus.BAD_REQUEST);
     	}else {
     		Optional<PersonalInformation> personalInformation = 
@@ -67,7 +67,8 @@ public class PersonalInformationController {
     	Image image = new Image();
     	PersonalInformation personalInformation = new PersonalInformation();
     	// only get personal information if exists
-    	if (!personalInformationService.findByUserId(userService.getByUsername(username).get().getId()).isEmpty()) {
+    	if (personalInformationService.findByUserId(userService.getByUsername(username).get().getId()).empty() != null) {
+    		System.out.println("existe personal information");
     		personalInformation = personalInformationService.findByUserId(userService.getByUsername(username).get().getId()).get();
         	cloudinaryService.delete(personalInformation.getImage().getImageId());
     		image = imageService.save(personalInformationDto.getImage());

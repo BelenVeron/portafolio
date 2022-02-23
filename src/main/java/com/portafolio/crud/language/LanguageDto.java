@@ -1,7 +1,6 @@
 package com.portafolio.crud.language;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 public class LanguageDto {
 	

@@ -1,7 +1,6 @@
 package com.portafolio.security.controller;
 
 import com.portafolio.security.dto.Message;
-import com.portafolio.crud.personalInformation.PersonalInformation;
 import com.portafolio.security.dto.JwtDto;
 import com.portafolio.security.dto.LoginUser;
 import com.portafolio.security.dto.NewUser;

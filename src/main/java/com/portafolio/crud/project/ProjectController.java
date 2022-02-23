@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.portafolio.crud.cloudinary.CloudinaryService;
 import com.portafolio.crud.cloudinary.Image;
 import com.portafolio.crud.cloudinary.ImageService;
-import com.portafolio.crud.education.Education;
 import com.portafolio.security.entity.User;
 import com.portafolio.security.service.UserService;
 import com.portafolio.util.Message;

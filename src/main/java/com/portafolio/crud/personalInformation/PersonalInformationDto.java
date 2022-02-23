@@ -1,10 +1,8 @@
 package com.portafolio.crud.personalInformation;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 import com.portafolio.crud.cloudinary.Image;
-import com.portafolio.security.entity.User;
 
 public class PersonalInformationDto {
 

@@ -1,7 +1,6 @@
 package com.portafolio.crud.social;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -20,9 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.portafolio.crud.cloudinary.CloudinaryService;
-import com.portafolio.crud.social.Social;
-import com.portafolio.crud.social.SocialDto;
-import com.portafolio.crud.social.SocialService;
 import com.portafolio.security.entity.User;
 import com.portafolio.security.service.UserService;
 import com.portafolio.util.Message;

@@ -1,33 +1,24 @@
 package com.portafolio.crud.hero;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.Map;
 import java.util.Optional;
 
-import javax.imageio.ImageIO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.portafolio.crud.cloudinary.CloudinaryService;
 import com.portafolio.crud.cloudinary.Image;
 import com.portafolio.crud.cloudinary.ImageService;
-import com.portafolio.crud.hero.Hero;
-import com.portafolio.crud.hero.HeroDto;
 import com.portafolio.security.service.UserService;
 import com.portafolio.util.Message;
 
@@ -53,7 +44,7 @@ public class HeroController {
     @GetMapping("/get/{username}")
     public ResponseEntity<Hero> getOne(@PathVariable("username") String username){
     
-    	if (heroService.findByUserId(userService.getByUsername(username).get().getId()).isEmpty()) {
+    	if (heroService.findByUserId(userService.getByUsername(username).get().getId()).empty() == null) {
     		return new ResponseEntity(new Message("there is not information"), HttpStatus.BAD_REQUEST);
     	}else {
     		Optional<Hero> hero = 
@@ -73,7 +64,7 @@ public class HeroController {
     	Image image = new Image();
     	Hero hero = new Hero();
     	// only get personal information if exists
-    	if (!heroService.findByUserId(userService.getByUsername(username).get().getId()).isEmpty()) {
+    	if (heroService.findByUserId(userService.getByUsername(username).get().getId()).empty() != null) {
     		hero = heroService.findByUserId(userService.getByUsername(username).get().getId()).get();
         	cloudinaryService.delete(hero.getImage().getImageId());
     		image = imageService.save(heroDto.getImage());
