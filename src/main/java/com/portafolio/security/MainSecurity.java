@@ -60,6 +60,7 @@ public class MainSecurity extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers(
                 		"/auth/**",
+                		"/role/**",
                 		"/index",
                 		"/cloudinary/get/**",
                 		"/personalInformation/get/**",

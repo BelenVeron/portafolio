@@ -12,7 +12,7 @@ public class WorkExperienceDto {
     @JsonFormat(pattern="dd-MM-yyyy")
     private LocalDate start;
     @JsonFormat(pattern="dd-MM-yyyy")
-    private LocalDate end;
+    private LocalDate finished;
     private boolean inProgress;
     private String description;
     private Image image;
@@ -21,13 +21,13 @@ public class WorkExperienceDto {
 	public WorkExperienceDto() {
 	}
 
-	public WorkExperienceDto(Long id, String degree, LocalDate start, LocalDate end, boolean inProgress,
+	public WorkExperienceDto(Long id, String degree, LocalDate start, LocalDate finished, boolean inProgress,
 			String description, Image image) {
 		super();
 		this.id = id;
 		this.degree = degree;
 		this.start = start;
-		this.end = end;
+		this.finished = finished;
 		this.inProgress = inProgress;
 		this.description = description;
 		this.image = image;
@@ -72,13 +72,13 @@ public class WorkExperienceDto {
 	}
 
 
-	public LocalDate getEnd() {
-		return end;
+	public LocalDate getfinished() {
+		return finished;
 	}
 
 
-	public void setEnd(LocalDate end) {
-		this.end = end;
+	public void setfinished(LocalDate finished) {
+		this.finished = finished;
 	}
 
 

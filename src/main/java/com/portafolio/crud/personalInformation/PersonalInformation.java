@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 
@@ -23,7 +24,7 @@ public class PersonalInformation {
 	@NotNull
     private String name;
     private String degree;
-    @Column(columnDefinition = "MEDIUMTEXT")
+    @Lob
     private String summary;
     
     @OneToOne(cascade = CascadeType.ALL)

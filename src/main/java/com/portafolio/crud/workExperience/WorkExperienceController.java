@@ -67,7 +67,7 @@ public class WorkExperienceController {
     	
     	workExperience.setDegree(workExperienceDto.getDegree());
     	workExperience.setStart(workExperienceDto.getStart());
-    	workExperience.setEnd(workExperienceDto.getEnd());
+    	workExperience.setfinished(workExperienceDto.getfinished());
     	workExperience.setInProgress(workExperienceDto.getInProgress());
     	workExperience.setDescription(workExperienceDto.getDescription());
     	workExperience.setUser(user);
@@ -99,7 +99,7 @@ public class WorkExperienceController {
     	
     	workExperience.setDegree(workExperienceDto.getDegree());
     	workExperience.setStart(workExperienceDto.getStart());
-    	workExperience.setEnd(workExperienceDto.getEnd());
+    	workExperience.setfinished(workExperienceDto.getfinished());
     	workExperience.setInProgress(workExperienceDto.getInProgress());
     	workExperience.setDescription(workExperienceDto.getDescription());
     	

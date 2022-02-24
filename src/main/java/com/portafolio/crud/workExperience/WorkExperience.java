@@ -10,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
@@ -32,31 +33,29 @@ public class WorkExperience {
     @JsonFormat(pattern="dd-MM-yyyy")
     private LocalDate start;
     @JsonFormat(pattern="dd-MM-yyyy")
-    private LocalDate end;
+    private LocalDate finished;
     private boolean inProgress;
     
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "image_id", referencedColumnName = "id")
     private Image image;
     
-    @Column(columnDefinition = "MEDIUMTEXT")
+    @Lob
     private String description;
     
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @ManyToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private User user;
     
     
 	public WorkExperience() {
 	}
 
-	public WorkExperience(@NotNull String degree, LocalDate start, LocalDate end, boolean inProgress, Image image,
+	public WorkExperience(@NotNull String degree, LocalDate start, LocalDate finished, boolean inProgress, Image image,
 			String description, User user) {
 		super();
 		this.degree = degree;
 		this.start = start;
-		this.end = end;
+		this.finished = finished;
 		this.inProgress = inProgress;
 		this.image = image;
 		this.description = description;
@@ -100,13 +99,13 @@ public class WorkExperience {
 	}
 
 
-	public LocalDate getEnd() {
-		return end;
+	public LocalDate getfinished() {
+		return finished;
 	}
 
 
-	public void setEnd(LocalDate end) {
-		this.end = end;
+	public void setfinished(LocalDate finished) {
+		this.finished = finished;
 	}
 
 
@@ -141,7 +140,7 @@ public class WorkExperience {
 
 	@Override
 	public String toString() {
-		return "WorkExperience [id=" + id + ", degree=" + degree + ", start=" + start + ", end=" + end + ", inProgress="
+		return "WorkExperience [id=" + id + ", degree=" + degree + ", start=" + start + ", finished=" + finished + ", inProgress="
 				+ inProgress + ", image=" + image + ", description=" + description + ", user=" + user + "]";
 	}
     
