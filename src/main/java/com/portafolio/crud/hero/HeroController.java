@@ -43,15 +43,8 @@ public class HeroController {
      * */
     @GetMapping("/get/{username}")
     public ResponseEntity<Hero> getOne(@PathVariable("username") String username){
-    
-    	if (heroService.findByUserId(userService.getByUsername(username).get().getId()).empty() == null) {
-    		return new ResponseEntity(new Message("there is not information"), HttpStatus.BAD_REQUEST);
-    	}else {
-    		Optional<Hero> hero = 
-    				heroService.findByUserId(userService.getByUsername(username).get().getId());
-    		return new ResponseEntity(hero, HttpStatus.OK);
-    	}
-    	
+    	Optional<Hero> hero = heroService.findByUserId(userService.getByUsername(username).get().getId());
+    	return new ResponseEntity(hero, HttpStatus.OK);
     }
 
 

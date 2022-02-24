@@ -27,7 +27,7 @@ public class PersonalInformation {
     @Lob
     private String summary;
     
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne()
     @JoinColumn(name = "image_id", referencedColumnName = "id")
     private Image image;
     

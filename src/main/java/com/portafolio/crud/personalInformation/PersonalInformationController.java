@@ -44,65 +44,66 @@ public class PersonalInformationController {
      * */
     @GetMapping("/get/{username}")
     public ResponseEntity<PersonalInformation> getOne(@PathVariable("username") String username){
-    
-    	if (personalInformationService.findByUserId(userService.getByUsername(username).get().getId()).empty() == null) {
-    		return new ResponseEntity(new Message("there is not information"), HttpStatus.BAD_REQUEST);
-    	}else {
-    		Optional<PersonalInformation> personalInformation = 
-    				personalInformationService.findByUserId(userService.getByUsername(username).get().getId());
-    		return new ResponseEntity(personalInformation, HttpStatus.OK);
-    	}
-    	
+    	Optional<PersonalInformation> personalInformation = personalInformationService.findByUserId(userService.getByUsername(username).get().getId());
+    	return new ResponseEntity(personalInformation, HttpStatus.OK);
     }
 
 
     /*
-	 * Create or update personal information with the user id
+	 * Create or update personal information with the username.
+	 * Important: if the Dto's Image is null, it's gonna be remove
 	 * */ 
     @PostMapping("/create/{username}")
     public ResponseEntity<?> create(@PathVariable("username") String username, @RequestBody PersonalInformationDto personalInformationDto) throws IOException{
     	if(StringUtils.isEmpty(personalInformationDto.getName()))
             return new ResponseEntity(new Message("the name is necessary"), HttpStatus.BAD_REQUEST);
     	
-    	Image image = new Image();
     	PersonalInformation personalInformation = new PersonalInformation();
+    	long idImage = 0;
     	// only get personal information if exists
-    	if (personalInformationService.findByUserId(userService.getByUsername(username).get().getId()).empty() != null) {
-    		System.out.println("existe personal information");
+    	if (personalInformationService.findByUserId(userService.getByUsername(username).get().getId()).isPresent()) {
     		personalInformation = personalInformationService.findByUserId(userService.getByUsername(username).get().getId()).get();
-        	cloudinaryService.delete(personalInformation.getImage().getImageId());
-    		image = imageService.save(personalInformationDto.getImage());
-    	}else {
-    		// without image, to save the first information
-    		Image imageDefault = imageService.getOne((long) 72).get();
-    		image.setImageId(imageDefault.getImageId());
-    		image.setImageUrl(imageDefault.getImageUrl());
-    		image.setName(imageDefault.getName());
-    		image = imageService.save(image);
+    		if (personalInformationDto.getImage() != null && personalInformation.getImage() != null) {
+    			cloudinaryService.delete(personalInformation.getImage().getImageId());
+    			idImage = personalInformation.getImage().getId();
+    		}
     	}
     	
     	personalInformation.setName(personalInformationDto.getName());
     	personalInformation.setDegree(personalInformationDto.getDegree());
     	personalInformation.setSummary(personalInformationDto.getSummary());
-    	personalInformation.setImage(image);
+    	personalInformation.setImage(personalInformationDto.getImage());
     	personalInformation.setUser(userService.getByUsername(username).get());
     	
 	    personalInformationService.save(personalInformation);
 	    
-	    return new ResponseEntity(new Message("personalInformation created"), HttpStatus.OK);
-	   
+	    // need the id and delete after the personal information
+	    // is saved, because the referential image with personal information
+	    if (idImage > 0) {
+	    	imageService.delete(idImage);
+	    }
+	    
+	    return new ResponseEntity(personalInformation, HttpStatus.OK);  
     }
 
     
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") Long id) throws IOException{
-    	
+    	long idImage = 0;
     	// if theres is not information
     	if(!personalInformationService.existsById(id)) {
     		return new ResponseEntity(new Message("The personal information not exists"), HttpStatus.BAD_REQUEST);
         }
-        cloudinaryService.delete(personalInformationService.findById(id).get().getImage().getImageId());
+    	if (personalInformationService.findById(id).get().getImage() != null) {
+    		idImage = personalInformationService.findById(id).get().getImage().getId();
+    	}
+        
         personalInformationService.delete(id);
+        
+        if (idImage > 0) {
+        	cloudinaryService.delete(imageService.getOne(idImage).get().getImageId());
+        	imageService.delete(idImage);
+        }
   
         return new ResponseEntity(new Message("personalInformation deleted"), HttpStatus.OK);
     }
