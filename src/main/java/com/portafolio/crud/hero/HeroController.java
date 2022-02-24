@@ -60,29 +60,25 @@ public class HeroController {
      * */
     @PostMapping("/create/{username}")
     public ResponseEntity<?> update(@PathVariable("username") String username, @RequestBody HeroDto heroDto) throws IOException{
-    	
-    	Image image = new Image();
-    	Hero hero = new Hero();
-    	// only get personal information if exists
-    	if (heroService.findByUserId(userService.getByUsername(username).get().getId()).empty() != null) {
-    		hero = heroService.findByUserId(userService.getByUsername(username).get().getId()).get();
-        	cloudinaryService.delete(hero.getImage().getImageId());
-    		image = imageService.save(heroDto.getImage());
+    	if (heroDto.getImage() == null) {
+    		return new ResponseEntity(new Message("Must be containt an image"), HttpStatus.BAD_REQUEST);
     	}else {
-    		// without image, to save the first information
-    		Image imageDefault = imageService.getOne((long) 160).get();
-    		image.setImageId(imageDefault.getImageId());
-    		image.setImageUrl(imageDefault.getImageUrl());
-    		image.setName(imageDefault.getName());
-    		image = imageService.save(image);
+        	Hero hero = new Hero();
+        	// only get personal information if exists
+        	System.out.println(heroDto.getImage());
+        	if (heroService.findByUserId(userService.getByUsername(username).get().getId()).isPresent()){
+        		hero = heroService.findByUserId(userService.getByUsername(username).get().getId()).get();
+            	cloudinaryService.delete(hero.getImage().getImageId());	
+        	}
+        	
+        	hero.setImage(heroDto.getImage());
+        	hero.setUser(userService.getByUsername(username).get());
+        	
+    	    heroService.save(hero);
+    	    
+    	    return new ResponseEntity(hero, HttpStatus.OK);
     	}
     	
-    	hero.setImage(image);
-    	hero.setUser(userService.getByUsername(username).get());
-    	
-	    heroService.save(hero);
-	    
-	    return new ResponseEntity(new Message("hero created"), HttpStatus.OK);
     }
     
     

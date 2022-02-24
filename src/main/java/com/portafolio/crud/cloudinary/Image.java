@@ -25,7 +25,7 @@ public class Image {
         this.imageId = imageId;
     }
 
-    public Long getId() {
+	public Long getId() {
         return id;
     }
 

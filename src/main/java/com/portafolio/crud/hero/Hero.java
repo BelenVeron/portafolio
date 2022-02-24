@@ -18,7 +18,7 @@ public class Hero {
 	@GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
     
-    @OneToOne(cascade = CascadeType.ALL)
+	@OneToOne()
     @JoinColumn(name = "image_id", referencedColumnName = "id")
     private Image image;
     
