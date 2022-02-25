@@ -36,14 +36,14 @@ public class WorkExperience {
     private LocalDate finished;
     private boolean inProgress;
     
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne()
     @JoinColumn(name = "image_id", referencedColumnName = "id")
     private Image image;
     
     @Lob
     private String description;
     
-    @ManyToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     private User user;
     
     

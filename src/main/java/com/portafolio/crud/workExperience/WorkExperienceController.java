@@ -58,32 +58,36 @@ public class WorkExperienceController {
 	 * Create work experience with the username
 	 * */   
     @PostMapping("/create/{username}")
-    public ResponseEntity<?> create(@PathVariable("username") String username, @RequestBody WorkExperience workExperienceDto){
+    public ResponseEntity<?> create(@PathVariable("username") String username, @RequestBody WorkExperience workExperienceDto) throws IOException{
     	if(StringUtils.isEmpty(workExperienceDto.getDegree()))
             return new ResponseEntity(new Message("the name is necessary"), HttpStatus.BAD_REQUEST);
     	
     	User user = userService.getByUsername(username).get();
     	WorkExperience workExperience = new WorkExperience();
+    	long idImage = 0;
+    	
+    	// if is an update
+    	if (workExperienceDto.getId() != null) {
+    		workExperience = workExperienceService.findById(workExperienceDto.getId()).get();
+    		if (workExperience.getImage() != null && workExperienceDto.getImage() != null) {
+        		cloudinaryService.delete(workExperience.getImage().getImageId());
+    			idImage = workExperience.getImage().getId();
+        	}
+    	}
     	
     	workExperience.setDegree(workExperienceDto.getDegree());
     	workExperience.setStart(workExperienceDto.getStart());
     	workExperience.setfinished(workExperienceDto.getfinished());
     	workExperience.setInProgress(workExperienceDto.getInProgress());
     	workExperience.setDescription(workExperienceDto.getDescription());
+    	workExperience.setImage(workExperienceDto.getImage());
     	workExperience.setUser(user);
-    	
-    	// set a default image from the database, in this case
-    	// with id 160
-    	Image image = new Image();
-    	Image imageDefault = imageService.getOne((long) 160).get();
-		image.setImageId(imageDefault.getImageId());
-		image.setImageUrl(imageDefault.getImageUrl());
-		image.setName(imageDefault.getName());
-		image = imageService.save(image);
-		workExperience.setImage(image);
-		System.out.println("work: "+image);
 		
 	    workExperienceService.save(workExperience);
+	    
+	    if (idImage > 0) {
+	    	imageService.delete(idImage);
+	    }
 	    
 	    return new ResponseEntity(workExperience, HttpStatus.OK);
 	   
@@ -115,9 +119,21 @@ public class WorkExperienceController {
     
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") Long id) throws IOException{
-    	
-    	cloudinaryService.delete(workExperienceService.findById(id).get().getImage().getImageId());
-        workExperienceService.delete(id);
+    	long idImage = 0;
+    	// if theres is not information
+    	if(!workExperienceService.existsById(id)) {
+    		return new ResponseEntity(new Message("The work experience not exists"), HttpStatus.BAD_REQUEST);
+        }
+    	if (workExperienceService.findById(id).get().getImage() != null) {
+    		idImage = workExperienceService.findById(id).get().getImage().getId();
+    	}
+        
+    	workExperienceService.delete(id);
+        
+        if (idImage > 0) {
+        	cloudinaryService.delete(imageService.getOne(idImage).get().getImageId());
+        	imageService.delete(idImage);
+        }
         return new ResponseEntity(new Message("workExperience deleted"), HttpStatus.OK);
     }
     
