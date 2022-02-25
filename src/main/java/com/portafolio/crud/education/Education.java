@@ -33,7 +33,7 @@ public class Education {
     private LocalDate date;
     private String Period;
     
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne()
     @JoinColumn(name = "image_id", referencedColumnName = "id")
     private Image image;
     

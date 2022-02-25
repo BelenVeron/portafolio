@@ -93,29 +93,6 @@ public class WorkExperienceController {
 	   
     }
     
-    /*
-     * complete update
-     * */
-    @PutMapping("/update")
-    public ResponseEntity<?> update(@RequestBody WorkExperienceDto workExperienceDto) throws IOException{
-    	
-        WorkExperience workExperience = workExperienceService.findById(workExperienceDto.getId()).get();
-    	
-    	workExperience.setDegree(workExperienceDto.getDegree());
-    	workExperience.setStart(workExperienceDto.getStart());
-    	workExperience.setfinished(workExperienceDto.getfinished());
-    	workExperience.setInProgress(workExperienceDto.getInProgress());
-    	workExperience.setDescription(workExperienceDto.getDescription());
-    	
-    	// delete from cloudinary before update the image in database
-    	cloudinaryService.delete(workExperienceService.findById(workExperienceDto.getId()).get().getImage().getImageId());
-    	workExperience.setImage(workExperienceDto.getImage());
-    	
-    	workExperienceService.save(workExperience);
-        	
-        return new ResponseEntity(workExperience, HttpStatus.OK);
-    }
-
     
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") Long id) throws IOException{

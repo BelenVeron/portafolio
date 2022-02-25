@@ -59,61 +59,59 @@ public class EducationController {
 	 * Create work experience with the username
 	 * */   
     @PostMapping("/create/{username}")
-    public ResponseEntity<?> create(@PathVariable("username") String username, @RequestBody Education educationDto){
+    public ResponseEntity<?> create(@PathVariable("username") String username, @RequestBody Education educationDto) throws IOException{
     	if(StringUtils.isEmpty(educationDto.getDegree()))
             return new ResponseEntity(new Message("the name is necessary"), HttpStatus.BAD_REQUEST);
     	
     	User user = userService.getByUsername(username).get();
     	Education education = new Education();
+    	long idImage = 0;
+    	
+    	// if is an update
+    	if (educationDto.getId() != null) {
+    		education = educationService.findById(educationDto.getId()).get();
+    		if (education.getImage() != null && educationDto.getImage() != null) {
+        		cloudinaryService.delete(education.getImage().getImageId());
+    			idImage = education.getImage().getId();
+        	}
+    	}
     	
     	education.setInstitution(educationDto.getInstitution());
     	education.setDegree(educationDto.getDegree());
     	education.setDate(educationDto.getDate());
     	education.setPeriod(educationDto.getPeriod());
+    	education.setImage(educationDto.getImage());
     	education.setUser(user);
-    	
-    	Image image = new Image();
-    	Image imageDefault = imageService.getOne((long) 160).get();
-		image.setImageId(imageDefault.getImageId());
-		image.setImageUrl(imageDefault.getImageUrl());
-		image.setName(imageDefault.getName());
-		image = imageService.save(image);
-		education.setImage(image);
     	
 	    educationService.save(education);
 	    
+	    if (idImage > 0) {
+	    	imageService.delete(idImage);
+	    }
+	    
 	    return new ResponseEntity(education, HttpStatus.OK);
 	   
-    }
-    
-    /*
-     * Update only the text
-     * */
-    @PutMapping("/update")
-    public ResponseEntity<?> update(@RequestBody Education educationDto) throws IOException{
-    	
-        Education education = educationService.findById(educationDto.getId()).get();
-    	
-        education.setInstitution(educationDto.getInstitution());
-    	education.setDegree(educationDto.getDegree());
-    	education.setDate(educationDto.getDate());
-    	education.setPeriod(educationDto.getPeriod());
-    	
-    	// delete from cloudinary before update the image in database
-    	cloudinaryService.delete(educationService.findById(educationDto.getId()).get().getImage().getImageId());
-    	education.setImage(educationDto.getImage());
-    	
-    	educationService.save(education);
-        	
-        return new ResponseEntity(education, HttpStatus.OK);
     }
   
     
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") Long id) throws IOException{
     	
-    	cloudinaryService.delete(educationService.findById(id).get().getImage().getImageId());
-        educationService.delete(id);
+    	long idImage = 0;
+    	// if theres is not information
+    	if(!educationService.existsById(id)) {
+    		return new ResponseEntity(new Message("The work experience not exists"), HttpStatus.BAD_REQUEST);
+        }
+    	if (educationService.findById(id).get().getImage() != null) {
+    		idImage = educationService.findById(id).get().getImage().getId();
+    	}
+        
+    	educationService.delete(id);
+        
+        if (idImage > 0) {
+        	cloudinaryService.delete(imageService.getOne(idImage).get().getImageId());
+        	imageService.delete(idImage);
+        }
         return new ResponseEntity(new Message("education deleted"), HttpStatus.OK);
     }
 
