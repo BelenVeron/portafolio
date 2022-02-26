@@ -36,7 +36,7 @@ public class Project {
     private String description;
     private String link;
     
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne()
     @JoinColumn(name = "image_id", referencedColumnName = "id")
     private Image image;
     

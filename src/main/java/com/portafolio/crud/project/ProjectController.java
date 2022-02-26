@@ -59,66 +59,59 @@ public class ProjectController {
 	 * Create or update personal information with the user id
 	 * */ 
     @PostMapping("/create/{username}")
-    public ResponseEntity<?> create(@PathVariable("username") String username, @RequestBody Project projectDto){
+    public ResponseEntity<?> create(@PathVariable("username") String username, @RequestBody Project projectDto) throws IOException{
     	if(StringUtils.isEmpty(projectDto.getName()))
             return new ResponseEntity(new Message("the name is necessary"), HttpStatus.BAD_REQUEST);
     	
     	User user = userService.getByUsername(username).get();
     	Project project = new Project();
+    	long idImage = 0;
+    	
+    	// if is an update
+    	if (projectDto.getId() != null) {
+    		project = projectService.findById(projectDto.getId()).get();
+    		if (project.getImage() != null && projectDto.getImage() != null) {
+        		cloudinaryService.delete(project.getImage().getImageId());
+    			idImage = project.getImage().getId();
+        	}
+    	}
     	
     	project.setName(projectDto.getName());
     	project.setDate(projectDto.getDate());
     	project.setDescription(projectDto.getDescription());
     	project.setLink(projectDto.getLink());
+    	project.setImage(projectDto.getImage());
     	project.setUser(user);
-    	
-    	Image image = new Image();
-    	Image imageDefault = imageService.getOne((long) 160).get();
-		image.setImageId(imageDefault.getImageId());
-		image.setImageUrl(imageDefault.getImageUrl());
-		image.setName(imageDefault.getName());
-		image = imageService.save(image);
-		project.setImage(image);
     	
 	    projectService.save(project);
 	    
+	    if (idImage > 0) {
+	    	imageService.delete(idImage);
+	    }
+	    
 	    return new ResponseEntity(project, HttpStatus.OK);
 	   
-    }
-
-    /*
-     * Update only the image
-     * */
-    @PutMapping("/update")
-    public ResponseEntity<?> update(@RequestBody Project projectDto) throws IOException{
-        
-    	Project project = projectService.findById(projectDto.getId()).get();
-    	
-        project.setName(projectDto.getName());
-    	project.setDescription(projectDto.getDescription());
-    	project.setDate(projectDto.getDate());
-    	project.setLink(projectDto.getLink());
-    	
-    	// delete from cloudinary before update the image in database
-    	cloudinaryService.delete(projectService.findById(projectDto.getId()).get().getImage().getImageId());
-    	project.setImage(projectDto.getImage());
-    	
-    	projectService.save(project);
-        	
-        return new ResponseEntity(project, HttpStatus.OK);
     }
     
     
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") Long id) throws IOException{
-    	
+    	long idImage = 0;
     	// if theres is not information
     	if(!projectService.existsById(id)) {
     		return new ResponseEntity(new Message("The personal information not exists"), HttpStatus.BAD_REQUEST);
         }
-         	
-    	cloudinaryService.delete(projectService.findById(id).get().getImage().getImageId());
-        projectService.delete(id);
+   
+    	if (projectService.findById(id).get().getImage() != null) {
+    		idImage = projectService.findById(id).get().getImage().getId();
+    	}
+        
+    	projectService.delete(id);
+        
+        if (idImage > 0) {
+        	cloudinaryService.delete(imageService.getOne(idImage).get().getImageId());
+        	imageService.delete(idImage);
+        }
   
         return new ResponseEntity(new Message("project deleted"), HttpStatus.OK);
     }
