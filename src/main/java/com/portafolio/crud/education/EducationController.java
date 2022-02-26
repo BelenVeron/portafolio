@@ -79,7 +79,7 @@ public class EducationController {
     	education.setInstitution(educationDto.getInstitution());
     	education.setDegree(educationDto.getDegree());
     	education.setDate(educationDto.getDate());
-    	education.setPeriod(educationDto.getPeriod());
+    	education.setperiod(educationDto.getperiod());
     	education.setImage(educationDto.getImage());
     	education.setUser(user);
     	

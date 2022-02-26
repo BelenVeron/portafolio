@@ -2,7 +2,6 @@ package com.portafolio.crud.education;
 
 import java.time.LocalDate;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -31,7 +30,7 @@ public class Education {
     private String degree;
     @JsonFormat(pattern="dd-MM-yyyy")
     private LocalDate date;
-    private String Period;
+    private String period;
     
     @OneToOne()
     @JoinColumn(name = "image_id", referencedColumnName = "id")
@@ -51,7 +50,7 @@ public class Education {
 		this.institution = institution;
 		this.degree = degree;
 		this.date = date;
-		Period = period;
+		this.period = period;
 		this.image = image;
 		this.user = user;
 	}
@@ -88,12 +87,12 @@ public class Education {
 		this.date = date;
 	}
 
-	public String getPeriod() {
-		return Period;
+	public String getperiod() {
+		return period;
 	}
 
-	public void setPeriod(String period) {
-		Period = period;
+	public void setperiod(String period) {
+		this.period = period;
 	}
 
 	public Image getImage() {
