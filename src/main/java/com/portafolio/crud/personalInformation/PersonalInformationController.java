@@ -63,7 +63,7 @@ public class PersonalInformationController {
     	// only get personal information if exists
     	if (personalInformationService.findByUserId(userService.getByUsername(username).get().getId()).isPresent()) {
     		personalInformation = personalInformationService.findByUserId(userService.getByUsername(username).get().getId()).get();
-    		if (personalInformationDto.getImage() != null && personalInformation.getImage() != null) {
+    		if (personalInformationDto.getImage() != null && personalInformation.getImage() != null && personalInformation.getImage().getId() != personalInformationDto.getImage().getId()) {
     			cloudinaryService.delete(personalInformation.getImage().getImageId());
     			idImage = personalInformation.getImage().getId();
     		}

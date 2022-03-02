@@ -70,7 +70,7 @@ public class ProjectController {
     	// if is an update
     	if (projectDto.getId() != null) {
     		project = projectService.findById(projectDto.getId()).get();
-    		if (project.getImage() != null && projectDto.getImage() != null) {
+    		if (project.getImage() != null && projectDto.getImage() != null && project.getImage().getId() != projectDto.getImage().getId()) {
         		cloudinaryService.delete(project.getImage().getImageId());
     			idImage = project.getImage().getId();
         	}

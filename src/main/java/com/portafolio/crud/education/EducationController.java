@@ -70,7 +70,7 @@ public class EducationController {
     	// if is an update
     	if (educationDto.getId() != null) {
     		education = educationService.findById(educationDto.getId()).get();
-    		if (education.getImage() != null && educationDto.getImage() != null) {
+    		if (education.getImage() != null && educationDto.getImage() != null && education.getImage().getId() != educationDto.getImage().getId()) {
         		cloudinaryService.delete(education.getImage().getImageId());
     			idImage = education.getImage().getId();
         	}

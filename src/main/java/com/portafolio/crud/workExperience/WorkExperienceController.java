@@ -69,7 +69,7 @@ public class WorkExperienceController {
     	// if is an update
     	if (workExperienceDto.getId() != null) {
     		workExperience = workExperienceService.findById(workExperienceDto.getId()).get();
-    		if (workExperience.getImage() != null && workExperienceDto.getImage() != null) {
+    		if (workExperience.getImage() != null && workExperienceDto.getImage() != null && workExperience.getImage().getId() != workExperienceDto.getImage().getId()) {
         		cloudinaryService.delete(workExperience.getImage().getImageId());
     			idImage = workExperience.getImage().getId();
         	}
